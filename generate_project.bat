@@ -1,3 +1,3 @@
 cd ./build
-cmake ..
+cmake .. -DAppToRun=SkeletonApp
 pause

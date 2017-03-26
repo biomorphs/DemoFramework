@@ -19,12 +19,16 @@ set(DEMOFRAMEWORK_ROOT_PATH "${CMAKE_SOURCE_DIR}/engine")
 # Engine projects
 add_subdirectory (${DEMOFRAMEWORK_ROOT_PATH}/platform)
 add_subdirectory (${DEMOFRAMEWORK_ROOT_PATH}/core)
+add_subdirectory (${DEMOFRAMEWORK_ROOT_PATH}/render)
 
 # Launcher project
 add_subdirectory (${CMAKE_SOURCE_DIR}/launcher)
 
 # Tests project
 add_subdirectory(${CMAKE_SOURCE_DIR}/tests)
+
+# Apps
+add_subdirectory (${CMAKE_SOURCE_DIR}/apps)
 
 
 

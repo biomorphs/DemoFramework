@@ -8,6 +8,9 @@ target_include_directories(Launcher PUBLIC ${DEMOFRAMEWORK_ROOT_PATH})
 
 target_link_libraries(Launcher Platform)
 
+# Link with the app dll
+target_link_libraries(Launcher ${AppToRun})
+
 # Link with external libraries
 target_link_libraries(Launcher ${SDL2_LIBRARY})
 target_link_libraries(Launcher ${SDL2_LIBRARY_MAIN})

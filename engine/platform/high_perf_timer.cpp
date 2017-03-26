@@ -1,5 +1,5 @@
 /*
-SDLEngine
+DemoFramework
 Matt Hoyle
 */
 #include "time.h"
