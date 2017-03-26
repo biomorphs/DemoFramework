@@ -3,6 +3,7 @@ DemoFramework
 Matt Hoyle
 */
 #include "engine.h"
+#include "timer_system.h"
 
 namespace Core
 {
@@ -11,12 +12,19 @@ namespace Core
 		Shutdown();
 	}
 
+	void Engine::RegisterEngineSystems(std::function<void(ISystemRegistrar&)>& userSystemRegistrationCallback)
+	{
+		m_systemManager->RegisterSystem("Core::TimerSystem", new TimerSystem());
+
+		// call this after input, etc, but before render
+		userSystemRegistrationCallback( *m_systemManager );
+	}
+
 	bool Engine::Initialise(std::function<void(ISystemRegistrar&)> userSystemRegistrationCallback)
 	{
 		m_systemManager = std::make_unique<SystemManager>();
 
-		// call this after input, etc, but before render
-		userSystemRegistrationCallback( *m_systemManager );
+		RegisterEngineSystems(userSystemRegistrationCallback);
 
 		// start up all systems
 		if ( !m_systemManager->Initialise() )

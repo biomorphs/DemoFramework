@@ -24,6 +24,7 @@ namespace Core
 		void RunMainThread();
 
 	private:
+		void RegisterEngineSystems(std::function<void(ISystemRegistrar&)>& userSystemRegistrationCallback);
 		void Shutdown();
 
 		std::unique_ptr<SystemManager> m_systemManager;
