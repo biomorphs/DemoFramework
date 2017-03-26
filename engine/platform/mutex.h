@@ -1,0 +1,32 @@
+/*
+SDLEngine
+Matt Hoyle
+*/
+#pragma once
+
+namespace Platform
+{
+	class Mutex
+	{
+	public:
+		Mutex();
+		Mutex(const Mutex& other) = delete;
+		Mutex(Mutex&& other);
+		~Mutex();
+
+		void Lock();
+		void Unlock();
+
+	private:
+		void* m_mutex;
+	};
+
+	class ScopedMutex
+	{
+	public:
+		ScopedMutex(Mutex& target);
+		~ScopedMutex();
+	private:
+		Mutex& m_mutex;
+	};
+}
