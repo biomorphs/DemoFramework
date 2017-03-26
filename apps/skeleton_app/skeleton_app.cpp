@@ -18,7 +18,7 @@ public:
 
 	bool PreInit(Core::ISystemEnumerator& systemEnumerator) override
 	{
-		m_timerSystem = static_cast<Core::TimerSystem*>( systemEnumerator.GetSystem("Core::TimerSystem") );
+		m_timerSystem = static_cast<Core::TimerSystem*>( systemEnumerator.GetSystem("TimerSystem") );
 		return true;
 	}
 	bool Initialise() override
