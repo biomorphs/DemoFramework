@@ -8,8 +8,12 @@ namespace Render
 {
 	int32_t RenderSystem::RenderThreadFn(RenderSystem& renderSystem)
 	{
+		// Create the GPU device now
+		renderSystem.m_device = std::make_unique<Device>( *renderSystem.m_mainWindow.get() );
 		while (renderSystem.m_renderThreadShouldQuit.Get() == 0)
 		{
+			renderSystem.m_device->ClearColourDepthTarget(glm::vec4(0.0f));
+			renderSystem.m_device->Present();
 			_sleep(10);
 		}
 		return 0;
