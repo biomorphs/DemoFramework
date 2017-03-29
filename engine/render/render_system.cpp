@@ -16,6 +16,12 @@ namespace Render
 
 	}
 
+	void RenderSystem::DoFrame()
+	{
+		m_device->ClearColourDepthTarget(glm::vec4(0.0f));
+		m_device->Present();
+	}
+
 	int32_t RenderSystem::RenderThreadFn(RenderSystem& renderSystem)
 	{
 		// Create the GPU device now
@@ -27,22 +33,15 @@ namespace Render
 		}
 		else
 		{
-			renderSystem.m_thisFrame = std::make_unique<FrameContext>(*renderSystem.m_device);
 			renderSystem.m_renderContextCreated.Set(1);
 			while (renderSystem.m_renderThreadShouldQuit.Get() == 0)
 			{
-				renderSystem.m_device->ClearColourDepthTarget(glm::vec4(0.0f));
-				renderSystem.m_device->Present();
+				renderSystem.DoFrame();
 			}
 		}
-		
+		renderSystem.m_renderContextCreated.Set(0);
 		renderSystem.m_device = nullptr;
 		return 0;
-	}
-
-	FrameContext& RenderSystem::GetFrameContext()
-	{
-		return *m_thisFrame;
 	}
 
 	bool RenderSystem::Initialise()
@@ -58,7 +57,7 @@ namespace Render
 			_sleep(1);
 		}
 
-		return true;
+		return m_renderContextCreated.Get() == 1;
 	}
 
 	bool RenderSystem::PostInit()

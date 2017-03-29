@@ -3,13 +3,16 @@ DemoFramework
 Matt Hoyle
 */
 #include "linear_allocator.h"
+#include "core/intmath.h"
 #include <intrin.h>  
 
 namespace Core
 {
-	LinearAllocator::LinearAllocator(int32_t totalSizeBytes)
-		: m_buffer(new uint8_t[totalSizeBytes])
+	const size_t c_bufferBaseAlignment = 1024 * 1024;	// Try to handle the largest alignment anyone will ask for
+
+	LinearAllocator::LinearAllocator(int32_t totalSizeBytes, AllocFn allocFn, FreeFn freeFn)
 	{
+		m_buffer = reinterpret_cast<uint8_t*>(allocFn(totalSizeBytes, c_bufferBaseAlignment));
 		m_head.Set(0);
 		m_totalSize = totalSizeBytes;
 	}
@@ -18,18 +21,27 @@ namespace Core
 	{
 	}
 
-	void* LinearAllocator::Allocate(int32_t bytes)
+	void* LinearAllocator::Allocate(size_t bytes, size_t align)
 	{
+		if (bytes >= INT32_MAX || align >= INT32_MAX)
+		{
+			return nullptr;
+		}
+
+		const int32_t requiredSize = bytes + align - 1;
 		int32_t current = 0;
 		do
 		{
 			current = m_head.Get();
-			if (m_totalSize - current < bytes)
+			if (m_totalSize - current < requiredSize)
 			{
 				return 0;
 			}
 		} while (m_head.CAS(current, current + bytes ) == false);
-		return reinterpret_cast<void*>( m_buffer.get() + current );
+
+		// Align up returned ptr
+		int32_t alignedIndex = Core::AlignUp(current, (int32_t)align);
+		return m_buffer + alignedIndex;
 	}
 
 	void LinearAllocator::Rewind()
