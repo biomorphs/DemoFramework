@@ -1,8 +1,21 @@
+/*
+DemoFramework
+Matt Hoyle
+*/
 #include "catch.hpp"
 #include "core/linear_allocator.h"
 
 TEST_CASE("Alloc works", "[Core::LinearAllocator]")
-{	
+{
+	SECTION("Size correct")
+	{
+		Core::LinearAllocator allocator(1024 * 1024);
+		void* p0 = allocator.Allocate(16, 1);
+		REQUIRE(allocator.TotalAllocated() == 16);
+		void* p1 = allocator.Allocate(32, 1);
+		REQUIRE(allocator.TotalAllocated() == 48);
+	}
+
 	SECTION("Alignment correct")
 	{
 		Core::LinearAllocator allocator(1024 * 1024);

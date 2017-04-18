@@ -6,9 +6,29 @@ Matt Hoyle
 
 namespace Render
 {
-	CommandBuffer::CommandBuffer(Device& d, size_t maximumSize)
-		: m_device(d)
-		, m_cmdBufferAllocator(maximumSize)
+	CommandBuffer::CommandBuffer(size_t maximumSize)
+		: m_cmdBufferAllocator(maximumSize)
 	{
+	}
+
+	void CommandBuffer::CallCommands()
+	{
+		const size_t cmdListHeadAddr = reinterpret_cast<const size_t> (m_cmdBufferAllocator.GetBuffer());
+		const size_t listSize = m_cmdBufferAllocator.TotalAllocated();
+		size_t nextCmdOffset = 0;
+		while (nextCmdOffset < listSize)
+		{
+			const size_t cmdHeadAddr = cmdListHeadAddr + nextCmdOffset;
+			const size_t cmdDataAddr = cmdListHeadAddr + nextCmdOffset + sizeof(RenderCommand);
+			const RenderCommand* __restrict cmdHeadPtr = reinterpret_cast<const RenderCommand*>(cmdHeadAddr);
+			const void* __restrict cmdDataPtr = reinterpret_cast<const void*>(cmdDataAddr);
+			nextCmdOffset += cmdHeadPtr->m_totalSize;
+			cmdHeadPtr->m_fn(cmdDataPtr);
+		}
+	}
+
+	void CommandBuffer::Reset()
+	{
+		m_cmdBufferAllocator.Rewind();
 	}
 }

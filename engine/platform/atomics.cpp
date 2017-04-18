@@ -43,8 +43,8 @@ namespace Platform
 		return SDL_AtomicSet(&GetInternal().m_atomic, v);
 	}
 
-	int32_t AtomicInt32::Get()
+	int32_t AtomicInt32::Get() const
 	{
-		return SDL_AtomicGet(&GetInternal().m_atomic);
+		return SDL_AtomicGet(&const_cast< SDL_atomic_t& >( GetInternal().m_atomic ));
 	}
 }

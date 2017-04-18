@@ -8,49 +8,49 @@ Matt Hoyle
 
 namespace Render
 {
-	class Device;
 	class CommandBuffer
 	{
 	public:
-		CommandBuffer(Device& d, size_t maximumSize = 1024 * 1024);
+		CommandBuffer(size_t maximumSize = 1024 * 1024);
 		~CommandBuffer() = default;
 		CommandBuffer(const CommandBuffer&) = delete;
 
 		// Command functions are
-		// void command(void* commandPtr, Device&)
-		using CommandFn = void(*)(void*, Device&);
+		// void command(void* commandPtr)
+		using CommandFn = void(*)(const void*);
 
-		// Variadic template pushes arguments to command constructor
-		template<class ... CommandData>
-		void PushCommand(CommandFn fn, CommandData ... args);
+		template<class CommandData>
+		void PushCommand(CommandFn fn, const CommandData& args);
+
+		void CallCommands();
+		void Reset();
 
 	private:
 		// Aligned on 16 byte boundaries to accomodate SIMD data storage
-		struct alignas(16) maximumSize
+		struct alignas(16) RenderCommand
 		{
 			CommandFn m_fn;
 			uint32_t m_totalSize;
 		};
 
-		Device& m_device;
 		Core::LinearAllocator m_cmdBufferAllocator;
 	};
 
-	template<class ... CommandData>
-	void CommandBuffer::PushCommand(CommandFn fn, CommandData ... args)
+	template<class CommandData>
+	void CommandBuffer::PushCommand(CommandFn fn, const CommandData& args)
 	{
-		const size_t realSizeRequired = sizeof(RenderCommand) + sizeof(CommandData);
+		static_assert(alignof(CommandData) <= 16, "Command data alignment too large");
+		const size_t realSizeRequired = Core::AlignUp( sizeof(RenderCommand) + sizeof(CommandData), size_t(16) );
 
-		// This will not align the object correctly if its alignment requirement is > 16 bytes
 		void* rawBuffer = m_cmdBufferAllocator.Allocate(realSizeRequired, 16);
 		if (rawBuffer != nullptr)
 		{
-			RenderCommand* cmdHeader = reinterpret_cast<RenderCommand*>(rawBuffer);
+			RenderCommand* __restrict cmdHeader = reinterpret_cast<RenderCommand*>(rawBuffer);
 			cmdHeader->m_fn = fn;
 			cmdHeader->m_totalSize = realSizeRequired;
 
 			auto rawBufferAddr = reinterpret_cast<const uintptr_t>(rawBuffer);
-			void* cmdDataPtr = rawBufferAddr + sizeof(RenderCommand);
+			CommandData* cmdDataPtr = reinterpret_cast<CommandData*>(rawBufferAddr + sizeof(RenderCommand));
 			CommandData* newCommand = new(cmdDataPtr) CommandData(args);	// Forward arguments to CTOR
 		}
 	}

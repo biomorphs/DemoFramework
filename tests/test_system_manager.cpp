@@ -1,3 +1,7 @@
+/*
+DemoFramework
+Matt Hoyle
+*/
 #include "catch.hpp"
 #include "core/system.h"
 #include "core/system_manager.h"

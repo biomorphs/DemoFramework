@@ -20,6 +20,11 @@ namespace Core
 		void* Allocate(size_t bytes, size_t align);
 		void Rewind();
 
+		inline const void* const GetBuffer() const {
+			return m_buffer;
+		}
+		size_t TotalAllocated() const { return static_cast< size_t >( m_head.Get() ); }
+
 	private:
 		uint8_t* m_buffer;
 		Platform::AtomicInt32 m_head;
