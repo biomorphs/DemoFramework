@@ -1,4 +1,0 @@
-/*
-DemoFramework
-Matt Hoyle
-*/

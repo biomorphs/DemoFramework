@@ -15,3 +15,4 @@ target_link_libraries(Render ${GLEW_LIBRARY})
 target_include_directories(Render PUBLIC ${GLM_INCLUDE_DIR})
 
 target_link_libraries(Render Platform)
+target_link_libraries(Render Core)

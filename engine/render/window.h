@@ -4,7 +4,7 @@ Matt Hoyle
 */
 #pragma once
 
-#include <glm.hpp>
+#include "core/vector_math.h"
 
 struct SDL_Window;
 

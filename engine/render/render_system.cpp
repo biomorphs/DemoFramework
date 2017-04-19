@@ -3,10 +3,14 @@ DemoFramework
 Matt Hoyle
 */
 #include "render_system.h"
+#include "frame_context.h"
 
 namespace Render
 {
 	RenderSystem::RenderSystem()
+		: m_lastFrameFinished(0)
+		, m_renderDeviceCreated(0)
+		, m_frameContextReady(0)
 	{
 
 	}
@@ -18,7 +22,6 @@ namespace Render
 
 	void RenderSystem::DoFrame()
 	{
-		m_device->ClearColourDepthTarget(glm::vec4(0.0f));
 		m_device->Present();
 	}
 
@@ -28,18 +31,15 @@ namespace Render
 		renderSystem.m_device = std::make_unique<Device>( *renderSystem.m_mainWindow.get() );
 		if (renderSystem.m_device == nullptr)
 		{
-			renderSystem.m_renderContextCreated.Set(-1);
 			return -1;
 		}
 		else
 		{
-			renderSystem.m_renderContextCreated.Set(1);
 			while (renderSystem.m_renderThreadShouldQuit.Get() == 0)
 			{
 				renderSystem.DoFrame();
 			}
 		}
-		renderSystem.m_renderContextCreated.Set(0);
 		renderSystem.m_device = nullptr;
 		return 0;
 	}
@@ -52,12 +52,7 @@ namespace Render
 			return RenderThreadFn(*this);
 		});
 
-		while (m_renderContextCreated.Get() == 0)
-		{
-			_sleep(1);
-		}
 
-		return m_renderContextCreated.Get() == 1;
 	}
 
 	bool RenderSystem::PostInit()

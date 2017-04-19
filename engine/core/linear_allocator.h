@@ -15,6 +15,8 @@ namespace Core
 		typedef void* (*AllocFn)(size_t, size_t);
 		typedef void (*FreeFn)(void*);
 		LinearAllocator(int32_t totalSizeBytes, AllocFn allocFn = Core::HeapAllocate, FreeFn freeFn = Core::HeapFree);
+		LinearAllocator(const LinearAllocator&) = delete;
+		LinearAllocator(LinearAllocator&&);
 		~LinearAllocator();
 
 		void* Allocate(size_t bytes, size_t align);

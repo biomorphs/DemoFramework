@@ -11,7 +11,7 @@ namespace Render
 	{
 	}
 
-	void CommandBuffer::CallCommands()
+	void CommandBuffer::CallCommands(Device& device)
 	{
 		const size_t cmdListHeadAddr = reinterpret_cast<const size_t> (m_cmdBufferAllocator.GetBuffer());
 		const size_t listSize = m_cmdBufferAllocator.TotalAllocated();
@@ -23,7 +23,7 @@ namespace Render
 			const RenderCommand* __restrict cmdHeadPtr = reinterpret_cast<const RenderCommand*>(cmdHeadAddr);
 			const void* __restrict cmdDataPtr = reinterpret_cast<const void*>(cmdDataAddr);
 			nextCmdOffset += cmdHeadPtr->m_totalSize;
-			cmdHeadPtr->m_fn(cmdDataPtr);
+			cmdHeadPtr->m_fn(cmdDataPtr, device);
 		}
 	}
 

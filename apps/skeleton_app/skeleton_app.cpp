@@ -28,7 +28,6 @@ public:
 	}
 	bool Tick() override
 	{
-		printf("Tick! %f seconds since initialise! Shutting down...\n", m_timerSystem->TimeSinceInitialiseSeconds());
 		return true; 
 	}
 	void Shutdown() override 

@@ -15,10 +15,25 @@ namespace Core
 		m_buffer = reinterpret_cast<uint8_t*>(allocFn(totalSizeBytes, c_bufferBaseAlignment));
 		m_head.Set(0);
 		m_totalSize = totalSizeBytes;
+		m_alloc = allocFn;
+		m_free = freeFn;
+	}
+
+	LinearAllocator::LinearAllocator(LinearAllocator&& other)
+		: m_buffer(other.m_buffer)
+		, m_head(other.m_head)
+		, m_totalSize(other.m_totalSize)
+		, m_alloc(other.m_alloc)
+		, m_free(other.m_free)
+	{
+		other.m_buffer = nullptr;
+		other.m_head.Set(0);
+		other.m_totalSize = 0;
 	}
 
 	LinearAllocator::~LinearAllocator()
 	{
+		m_free(m_buffer);
 	}
 
 	void* LinearAllocator::Allocate(size_t bytes, size_t align)

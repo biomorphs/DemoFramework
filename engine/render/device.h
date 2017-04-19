@@ -5,7 +5,7 @@ Matt Hoyle
 #pragma once
 
 #include <stdint.h>
-#include <glm.hpp>
+#include "core/vector_math.h"
 
 namespace Render
 {

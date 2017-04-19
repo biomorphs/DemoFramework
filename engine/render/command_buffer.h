@@ -8,6 +8,7 @@ Matt Hoyle
 
 namespace Render
 {
+	class Device;
 	class CommandBuffer
 	{
 	public:
@@ -17,12 +18,12 @@ namespace Render
 
 		// Command functions are
 		// void command(void* commandPtr)
-		using CommandFn = void(*)(const void*);
+		using CommandFn = void(*)(const void*, Device&);
 
 		template<class CommandData>
 		void PushCommand(CommandFn fn, const CommandData& args);
 
-		void CallCommands();
+		void CallCommands(Device& device);
 		void Reset();
 
 	private:
